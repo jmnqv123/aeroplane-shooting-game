@@ -1,0 +1,82 @@
+import pygame
+
+# Initialize Pygame
+pygame.init()
+
+# Set the window size and title
+WIDTH, HEIGHT = 800, 600
+pygame.display.set_caption("Aeroplane Shooting Game")
+
+# Load the player and enemy images
+player_image = pygame.image.load("player.png")
+enemy_image = pygame.image.load("enemy.png")
+
+# Set the player and enemy starting positions
+player_x, player_y = WIDTH / 2, HEIGHT - 50
+enemy_x, enemy_y = WIDTH / 2, 50
+
+# Set the player and enemy speeds
+player_speed = 5
+enemy_speed = 2
+
+# Set the player's bullets
+bullets = []
+
+# Set the game loop flag
+running = True
+
+# Set the clock to control the frame rate
+clock = pygame.time.Clock()
+
+# Run the game loop
+while running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                # Fire a bullet
+                bullets.append((player_x, player_y))
+    
+    # Update the player position based on keyboard input
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        player_x -= player_speed
+    if keys[pygame.K_RIGHT]:
+        player_x += player_speed
+    if keys[pygame.K_UP]:
+        player_y -= player_speed
+    if keys[pygame.K_DOWN]:
+        player_y += player_speed
+    
+    # Update the enemy position
+    enemy_x += enemy_speed
+    if enemy_x < 0 or enemy_x > WIDTH:
+        enemy_speed *= -1
+    
+    # Update the bullet positions
+    for i, (bullet_x, bullet_y) in enumerate(bullets):
+        bullet_y -= 5
+        if bullet_y < 0:
+            # Remove the bullet if it goes off the screen
+            del bullets[i]
+        else:
+            # Check for a collision with the enemy
+            if (bullet_x > enemy_x and bullet_x < enemy_x + enemy_image.get_width() and
+                bullet_y > enemy_y and bullet_y < enemy_y + enemy_image.get_height()):
+                # The enemy has been hit, end the game
+                running = False
+    
+    # Clear the screen
+    screen.fill((0, 0, 0))
+    
+    # Draw the player and enemy
+    screen.blit(player_image, (player_x, player_y))
+    screen.blit(enemy_image, (enemy_x, enemy_y))
+    
+    # Draw the bullets
+    for bullet_x, bullet_y in bullets:
+        pygame.draw.circle(screen, (255, 255, 255), (bullet_x, bullet_y), 5)
+    
+  
